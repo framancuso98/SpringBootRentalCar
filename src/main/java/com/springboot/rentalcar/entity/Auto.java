@@ -1,4 +1,4 @@
-package com.springboot.rentalcar.model;
+package com.springboot.rentalcar.entity;
 
 import java.io.Serializable;
 import java.util.List;

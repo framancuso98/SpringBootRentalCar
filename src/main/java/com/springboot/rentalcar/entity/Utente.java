@@ -1,4 +1,4 @@
-package com.springboot.rentalcar.model;
+package com.springboot.rentalcar.entity;
 
 import java.io.Serializable;
 
@@ -28,8 +28,8 @@ public class Utente implements Serializable{
 	private Integer id;
 	
 	@NotEmpty
-	@Column(name = "email")
-	private String email;
+	@Column(name = "username")
+	private String username;
 	
 	@NotEmpty
 	@Column(name = "password")
@@ -63,12 +63,12 @@ public class Utente implements Serializable{
 		this.id = id;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getPassword() {
@@ -113,7 +113,7 @@ public class Utente implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Utente [id=" + id + ", email=" + email + ", password=" + password + ", nome=" + nome + ", cognome="
+		return "Utente [id=" + id + ", username=" + username + ", password=" + password + ", nome=" + nome + ", cognome="
 				+ cognome + ", data_nascita=" + data_nascita + ", ruolo=" + ruolo + "]";
 	}
 }

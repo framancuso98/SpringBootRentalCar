@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.springboot.rentalcar.model.Utente;
+import com.springboot.rentalcar.entity.Utente;
 import com.springboot.rentalcar.repository.UtenteRepository;
 @Service
 public class UtenteService {
@@ -22,7 +22,7 @@ public class UtenteService {
 		return utenteRepo.findFirstById(id);
 	}
 	
-	public Utente findFirstByEmail(String email) {
-		return utenteRepo.findFirstByEmail(email);
+	public Utente findFirstByUsername(String username) {
+		return utenteRepo.findFirstByUsername(username);
 	}
 }
