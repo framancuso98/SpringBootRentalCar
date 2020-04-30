@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "prenotazione_tbl")
 public class Prenotazione implements Serializable{
@@ -28,6 +30,7 @@ public class Prenotazione implements Serializable{
 	
 	@ManyToOne( fetch = FetchType.EAGER)
 	@JoinColumn(name="id_auto", nullable=false)
+	@JsonManagedReference
 	private Auto auto;
 
 	//bi-directional many-to-one association to User

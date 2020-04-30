@@ -16,7 +16,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.springboot.rentalcar.jwt.JwtTokenAuthorizationOncePerRequestFilter;
+import com.springboot.rentalcar.jwt.JwtUnAuthorizedResponseAuthenticationEntryPoint;
 import com.springboot.rentalcar.service.CustomUserDetailsService;
 
 @Configuration
@@ -28,46 +31,62 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
 	
+	@Autowired
+	private JwtUnAuthorizedResponseAuthenticationEntryPoint jwtUnAuthorizedResponseAuthenticationEntryPoint;
+
+	@Autowired
+	private JwtTokenAuthorizationOncePerRequestFilter jwtAuthenticationTokenFilter;
+
 	@Value("${sicurezza.uri}")
 	private String authenticationPath;
-	
+
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception 
+	{
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoderBean());
 	}
-	
+
 	@Bean
-	public PasswordEncoder passwordEncoderBean() {
+	public PasswordEncoder passwordEncoderBean() 
+	{
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception{
-		return super.authenticationManager();
+	public AuthenticationManager authenticationManagerBean() throws Exception 
+	{
+		return super.authenticationManagerBean();
 	}
+	
+
+	private static final String[] USER_MATCHER = { "/utente/**"};
+	private static final String[] ADMIN_MATCHER = { "/admin/**"};
 
 	@Override
-	protected void configure(HttpSecurity http) throws Exception{
-		http
-			.csrf().disable()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-			.authorizeRequests().anyRequest().authenticated();
+	protected void configure(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.csrf().disable()
+		.exceptionHandling().authenticationEntryPoint(jwtUnAuthorizedResponseAuthenticationEntryPoint)
+		.and()
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		.and()
+		.authorizeRequests()
+		.antMatchers(USER_MATCHER).hasAnyRole("USER")
+		.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
+		.anyRequest().authenticated();
+
+		httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+		httpSecurity.headers().frameOptions()
+		.sameOrigin().cacheControl();  
 	}
 	
 	@Override
-	public void configure(WebSecurity webSecurity) throws Exception{
-		webSecurity
-					.ignoring().antMatchers(HttpMethod.POST, authenticationPath)
-					.antMatchers(HttpMethod.OPTIONS, "/**")
-					.and()
-						.ignoring()
-						.antMatchers(HttpMethod.GET);
+	public void configure(WebSecurity webSecurity) throws Exception 
+	{
+		webSecurity.ignoring().antMatchers(HttpMethod.POST, authenticationPath)
+				.antMatchers(HttpMethod.OPTIONS, "/**")
+				.and().ignoring()
+				.antMatchers(HttpMethod.GET, "/");	
 	}
-	
-	
-	
-	
-	
 }

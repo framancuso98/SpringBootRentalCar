@@ -18,7 +18,7 @@ import com.springboot.rentalcar.service.UtenteService;
 import javassist.NotFoundException;
 
 @RestController
-@RequestMapping("/prenotazione")
+//@RequestMapping("/prenotazione")
 public class PrenotazioneController {
 	@Autowired
 	PrenotazioneService prenotazioneService;

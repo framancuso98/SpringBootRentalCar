@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -51,6 +52,7 @@ public class Auto implements Serializable{
 	private Categoria categoria;
 	
 	@OneToMany(mappedBy="auto", cascade=CascadeType.REMOVE, fetch = FetchType.EAGER)
+	@JsonBackReference
 	private List<Prenotazione> prenotaziones;
 
 	public Auto() {

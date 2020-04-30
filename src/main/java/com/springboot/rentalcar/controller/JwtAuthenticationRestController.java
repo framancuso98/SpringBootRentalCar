@@ -49,7 +49,7 @@ public class JwtAuthenticationRestController {
 	@PostMapping(value = "${sicurezza.uri}")
 	public ResponseEntity<?> cerateAuthenticationToken(@RequestBody JwtTokenRequest authenticationRequest) throws AuthtenticationException{
 		
-		logger.info("Autenticazione e generazuione token");
+		logger.info("Autenticazione e generazione token");
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
 		final UserDetails userDetails = userDetailsService
@@ -58,6 +58,9 @@ public class JwtAuthenticationRestController {
 		final String token =jwtTokenUtil.generateToken(userDetails);
 		
 		logger.info(String.format("Token", token));
+		
+		JwtTokenResponse tokenResponse = new JwtTokenResponse(token);
+		
 		
 		return ResponseEntity.ok(token);
 	}
