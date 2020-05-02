@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 @Entity
@@ -28,7 +28,7 @@ public class Ruolo {
 	private String ruolo;
 	
 	@OneToMany(mappedBy="ruolo", fetch = FetchType.EAGER)
-	@JsonBackReference
+	@JsonManagedReference
 	private List<Utente> utentes;
 
 	public Ruolo() {

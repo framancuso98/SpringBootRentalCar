@@ -23,7 +23,7 @@ public class Prenotazione implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
-	private String id;
+	private int id;
 	
 	@Column(name = "stato")
 	private String stato;
@@ -41,11 +41,11 @@ public class Prenotazione implements Serializable{
 	public Prenotazione() {
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

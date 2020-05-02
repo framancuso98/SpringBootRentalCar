@@ -17,7 +17,15 @@ public class PrenotazioneService {
 		return prenotazioneRepo.findAll();
 	}
 	
-	public Prenotazione findFirstByUtente(Utente utente) {
+	public List<Prenotazione> findFirstByUtente(Utente utente) {
 		return prenotazioneRepo.findFirstByUtente(utente);
+	}
+	
+	public Prenotazione getPrenotazione(int id) {
+		return prenotazioneRepo.findFirstById(id);
+	}
+	
+	public void deleteById(Integer id) {
+		prenotazioneRepo.deleteById(id);
 	}
 }

@@ -10,5 +10,7 @@ public interface UtenteRepository extends JpaRepository<Utente, Integer>{
 	public Utente findFirstByUsername(String username);
 	
 	public Utente findFirstById(int id);
+	
+	Boolean existsByUsername(String username);
 }
 

@@ -59,7 +59,7 @@ public class JwtAuthenticationRestController {
 		
 		logger.info(String.format("Token", token));
 		
-		JwtTokenResponse tokenResponse = new JwtTokenResponse(token);
+		//JwtTokenResponse tokenResponse = new JwtTokenResponse(token);
 		
 		
 		return ResponseEntity.ok(token);

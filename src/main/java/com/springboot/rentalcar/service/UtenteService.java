@@ -25,4 +25,17 @@ public class UtenteService {
 	public Utente findFirstByUsername(String username) {
 		return utenteRepo.findFirstByUsername(username);
 	}
+	
+	public boolean existsByUsername(String username) {
+		return utenteRepo.existsByUsername(username);
+	}
+	
+	public void  deleteById(Integer id) {
+		utenteRepo.deleteById(id);
+	}
+	
+	public void addUtente(Utente utente) {
+		utenteRepo.save(utente);
+	}
+		
 }

@@ -8,4 +8,5 @@ import com.springboot.rentalcar.entity.Auto;
 @Repository
 public interface AutoRepository extends JpaRepository<Auto, Integer> {
 
+	public Auto findFirstById(int id);
 }

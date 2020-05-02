@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 
 @Entity
@@ -49,7 +49,7 @@ public class Utente implements Serializable{
 	
 	@ManyToOne( fetch = FetchType.EAGER)
 	@JoinColumn(name ="ruolo_id")
-	@JsonManagedReference
+	@JsonBackReference
 	private Ruolo ruolo;
 
 	public Utente() {
