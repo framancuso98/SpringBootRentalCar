@@ -1,6 +1,7 @@
 package com.springboot.rentalcar.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,10 +11,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -49,8 +51,15 @@ public class Utente implements Serializable{
 	
 	@ManyToOne( fetch = FetchType.EAGER)
 	@JoinColumn(name ="ruolo_id")
-	@JsonBackReference
+	//@JsonBackReference
 	private Ruolo ruolo;
+	
+	//bi-directional many-to-one association to PrenotazioneTbl
+	@OneToMany(mappedBy="utente")
+	//@JsonBackReference
+	@JsonIgnore
+	private List<Prenotazione> prenotaziones;
+
 
 	public Utente() {
 	}

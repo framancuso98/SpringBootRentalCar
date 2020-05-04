@@ -21,7 +21,15 @@ public class AutoService {
 		autoRepo.deleteById(id);
 	}
 	
-	public Auto getAuto(int id) {
+	public Auto findFirstById(int id) {
 		return autoRepo.findFirstById(id);
+	}
+	
+	public boolean existsByTarga(String targa) {
+		return autoRepo.existsByTarga(targa);
+	}
+	
+	public void addAuto(Auto auto) {
+		autoRepo.save(auto);
 	}
 }

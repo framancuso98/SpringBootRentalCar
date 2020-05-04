@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -48,13 +49,14 @@ public class Auto implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="categoria_id", nullable=false)
-	@JsonManagedReference
+	//@JsonBackReference
 	private Categoria categoria;
 	
-	@OneToMany(mappedBy="auto", cascade=CascadeType.REMOVE, fetch = FetchType.EAGER)
-	@JsonBackReference
+	@OneToMany(mappedBy="auto")
+	//@JsonManagedReference
+	@JsonIgnore
 	private List<Prenotazione> prenotaziones;
-
+	
 	public Auto() {
 	}
 

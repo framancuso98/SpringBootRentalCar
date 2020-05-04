@@ -9,4 +9,6 @@ import com.springboot.rentalcar.entity.Auto;
 public interface AutoRepository extends JpaRepository<Auto, Integer> {
 
 	public Auto findFirstById(int id);
+	
+	Boolean existsByTarga(String targa);
 }
