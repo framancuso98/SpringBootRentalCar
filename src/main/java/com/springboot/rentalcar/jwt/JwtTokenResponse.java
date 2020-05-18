@@ -10,6 +10,9 @@ public class JwtTokenResponse implements Serializable {
 	private String token;
 
 
+	public JwtTokenResponse() {
+	}
+	
 	public JwtTokenResponse(String token) {
 	}
 

@@ -36,6 +36,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private JwtTokenAuthorizationOncePerRequestFilter jwtAuthenticationTokenFilter;
+	
 
 	@Value("${sicurezza.uri}")
 	private String authenticationPath;
@@ -60,20 +61,22 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 
-	private static final String[] USER_MATCHER = { "/utente/**"};
-	private static final String[] ADMIN_MATCHER = { "/admin/**"};
+	//private static final String[] USER_MATCHER = { "/utente/**"};
+	//private static final String[] ADMIN_MATCHER = { "/admin/**"};
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf().disable()
+		httpSecurity.cors()
+		.and()
+		.csrf().disable()
 		.exceptionHandling().authenticationEntryPoint(jwtUnAuthorizedResponseAuthenticationEntryPoint)
 		.and()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
 		.authorizeRequests()
-		.antMatchers(USER_MATCHER).hasAnyRole("USER")
-		.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
-		.anyRequest().authenticated();
+		//.antMatchers(USER_MATCHER).permitAll()//hasAnyRole("USER")
+		//.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
+		.anyRequest().permitAll();//authenticated();
 
 		httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 

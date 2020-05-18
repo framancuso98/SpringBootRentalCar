@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.springboot.rentalcar.entity.Auto;
 import com.springboot.rentalcar.exception.NotFoundException;
 import com.springboot.rentalcar.service.AutoService;
@@ -23,6 +24,9 @@ public class AutoController {
 
 	@Autowired 
 	AutoService autoService;
+	
+	@Autowired
+	Gson gson;
 
 	private static final Logger log= LoggerFactory.getLogger(AutoController.class);
 
@@ -33,8 +37,8 @@ public class AutoController {
 			if (lista != null) {
 				return new ResponseEntity<List<Auto>>(lista, HttpStatus.OK);
 			}else {
-				String ErrMsg = String.format("Lista Auto Vuota");
-				throw new NotFoundException(ErrMsg);
+				//String ErrMsg = String.format("Lista Auto Vuota");
+				return new ResponseEntity<List<Auto>>(HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -50,33 +54,45 @@ public class AutoController {
 			Auto auto = autoService.findFirstById(id);
 			if (auto != null) {
 				autoService.deleteById(id);
-				return ResponseEntity.ok().body("AUTO ELIMINATA");
+				Gson gson = new Gson();
+				String msg = gson.toJson("AUTO ELIMINATA");
+				return ResponseEntity.ok().body(msg);
 			}else {
 				log.error("UTENTE NULLO");
-				return ResponseEntity.badRequest().body("AUTO NON PRESENTE");
+				Gson gson = new Gson();
+				String msg = gson.toJson("UTENTE NULLO!");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE ELIMINARE L'AUTO");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE ELIMINARE L'AUTO");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/inserisci", method = RequestMethod.PUT)
+	@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
 	public ResponseEntity iserisci(@RequestBody Auto auto) {
 		try {
 			System.out.println(auto);
 			if (autoService.existsByTarga(auto.getTarga())) {
 				log.error("AUTO INESISTENTE!!");
-				return ResponseEntity.badRequest().body("AUTO INESISTENTE!!");
+				Gson gson = new Gson();
+				String msg = gson.toJson("AUTO INESISTENTE!!");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}else {
 				autoService.addAuto(auto);
 				log.info("AUTO AGGIUNTA CON SUCCESSO");
-				return ResponseEntity.ok().body("AUTO AGGIUNTA CON SUCCESSO");
+				Gson gson = new Gson();
+				String msg = gson.toJson("AUTO AGGIUNTA CON SUCCESSO");
+				return ResponseEntity.ok().body(msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE INSERIRE L'AUTO");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE INSERIRE L'AUTO");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -88,19 +104,25 @@ public class AutoController {
 			Auto auto = autoService.findFirstById(id_auto);
 			if (autoService.existsByTarga(newAuto.getTarga()) && !newAuto.getTarga().equalsIgnoreCase(auto.getTarga()) ) {
 				log.info("TARGA GIA PRESENTE");
-				return ResponseEntity.badRequest().body("TARGA NON DISPONIBILE");
+				Gson gson = new Gson();
+				String msg = gson.toJson("TARGA NON DISPONIBILE");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}else {
 				auto.setCostruttore(newAuto.getCostruttore());
 				auto.setModello(newAuto.getModello());
 				auto.setAnno(newAuto.getAnno());
-				auto.setTarga(newAuto.getTarga());
+				auto.setTarga(newAuto.getTarga().toUpperCase());
 				auto.setCategoria(newAuto.getCategoria());
 				autoService.addAuto(auto);
-				return ResponseEntity.ok().body("AUTO MODIFICATA CON SUCCESSO");
+				Gson gson = new Gson();
+				String msg = gson.toJson("AUTO MODIFICATA CON SUCCESSO");
+				return ResponseEntity.ok().body(msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE MODIFICARE L'AUTO");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE MODIFICARE L'AUTO");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 }

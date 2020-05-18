@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,13 +16,17 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.springboot.rentalcar.exception.AuthtenticationException;
 import com.springboot.rentalcar.jwt.JwtTokenRequest;
 import com.springboot.rentalcar.jwt.JwtTokenResponse;
@@ -44,7 +49,23 @@ public class JwtAuthenticationRestController {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 	private static final Logger logger= LoggerFactory.getLogger(JwtAuthenticationRestController.class);
+	
+	@GetMapping(value = "/test")
+	public ResponseEntity<?> testConnex(){
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode responseNode = mapper.createObjectNode();
+		
+		 responseNode.put("code", HttpStatus.OK.toString());
+		 responseNode.put("message", "Test connessione ok");
+		 
+		 return new ResponseEntity<>(responseNode, new HttpHeaders(), HttpStatus.OK);
+		 
+	}
 	
 	@PostMapping(value = "${sicurezza.uri}")
 	public ResponseEntity<?> cerateAuthenticationToken(@RequestBody JwtTokenRequest authenticationRequest) throws AuthtenticationException{
@@ -59,10 +80,11 @@ public class JwtAuthenticationRestController {
 		
 		logger.info(String.format("Token", token));
 		
-		//JwtTokenResponse tokenResponse = new JwtTokenResponse(token);
+		JwtTokenResponse tokenResponse = new JwtTokenResponse();
+		tokenResponse.setToken(token);
 		
 		
-		return ResponseEntity.ok(token);
+		return ResponseEntity.ok(tokenResponse);
 	}
 	
 	

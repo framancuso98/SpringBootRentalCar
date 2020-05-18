@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.springboot.rentalcar.entity.Ruolo;
 import com.springboot.rentalcar.entity.Utente;
 import com.springboot.rentalcar.exception.NotFoundException;
 import com.springboot.rentalcar.jwt.JwtTokenUtil;
+import com.springboot.rentalcar.service.RuoloService;
 import com.springboot.rentalcar.service.UtenteService;
 
 @RestController
@@ -28,12 +31,18 @@ public class UtenteController {
 
 	@Autowired
 	UtenteService utenteService;
+	
+	@Autowired
+	RuoloService ruoloService;
 
 	@Autowired
 	JwtTokenUtil jwtTokenUtil;
 
 	@Autowired
 	PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	Gson gson;
 
 	private static final Logger log= LoggerFactory.getLogger(UtenteController.class);
 
@@ -58,7 +67,7 @@ public class UtenteController {
 	}
 
 
-	@GetMapping(value = "/utente/all", produces = "application/json")
+	@GetMapping(value = "/all", produces = "application/json")
 	public ResponseEntity<List<Utente>> listaUtente() throws NotFoundException{
 		try {
 			List<Utente> lista = utenteService.list();
@@ -76,26 +85,31 @@ public class UtenteController {
 	}
 
 
-	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/inserisci", method = RequestMethod.PUT)
-	public ResponseEntity addUtente(@RequestBody Utente utente){
+	
+	@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
+	public ResponseEntity<String> addUtente(@RequestBody Utente utente){
 		try {
 			System.out.println(utente);
 			if (utenteService.existsByUsername(utente.getUsername())) {
 				log.error("Username non disponibile!!");
-				return ResponseEntity.badRequest().body("Username non disponibile!!");
+				Gson gson = new Gson();
+				String msg = gson.toJson("Username non disponibile!!");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}else {
 				String pass = passwordEncoder.encode(utente.getPassword());
 				utente.setPassword(pass);
 				utenteService.addUtente(utente);
+				Gson gson = new Gson();
+				String msg = gson.toJson("Utente salvato con successo!!!");
 				log.info("Utente salvato con successo!!!");
-				return ResponseEntity.ok().body("Utente salvato con successo!!!");
+				return ResponseEntity.ok().body(msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE INSERIRE L'UTENTE");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE INSERIRE L'UTENTE");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
-
 	}
 
 
@@ -106,14 +120,21 @@ public class UtenteController {
 			Utente utente = utenteService.getUtente(id);
 			if (utente != null) {
 				utenteService.deleteById(id);
-				return ResponseEntity.ok().body("UTENTE ELIMINATO");
+				log.info("Utente eliminato con successo!!!");
+				Gson gson = new Gson();
+				String msg = gson.toJson("Utente eliminato!!");
+				return ResponseEntity.ok().body(msg);
 			}else {
 				log.error("UTENTE NULLO");
-				return ResponseEntity.badRequest().body("Utente nullo");
+				Gson gson = new Gson();
+				String msg = gson.toJson("UTENTE NULLO!!");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE ELIMINARE L'UTENTE");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE ELIMINARE L'UTENTE");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -126,7 +147,9 @@ public class UtenteController {
 			Utente utente = utenteService.getUtente(id_utente);
 			if (utenteService.existsByUsername(newUtente.getUsername()) && !newUtente.getUsername().equalsIgnoreCase(utente.getUsername())){
 				log.error("Username non disponibile!!");
-				return ResponseEntity.badRequest().body("Username non disponibile!!");
+				Gson gson = new Gson();
+				String msg = gson.toJson("Username non disponibile!!");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}else {
 				utente.setUsername(newUtente.getUsername());
 				utente.setPassword(passwordEncoder.encode(newUtente.getPassword()));
@@ -135,11 +158,46 @@ public class UtenteController {
 				utente.setData_nascita(newUtente.getData_nascita());
 				utente.setRuolo(newUtente.getRuolo());
 				utenteService.addUtente(utente);
-				return ResponseEntity.ok().body("UTENTE MODIFICATO CON SUCCESSO");
+				log.error("Utente salvato con successo!!!");
+				Gson gson = new Gson();
+				String msg = gson.toJson("Utente salvato con successo!!!");
+				return ResponseEntity.ok().body(msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE MODIFICARE L'UTENTE "+ newUtente.getUsername());
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE MODIFICARE L'UTENTE "+ newUtente.getUsername());
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/registra", method = RequestMethod.POST)
+	public ResponseEntity registraUtente(@RequestBody Utente utente){
+		try {
+			System.out.println(utente);
+			if (utenteService.existsByUsername(utente.getUsername())) {
+				log.error("Username non disponibile!!");
+				Gson gson = new Gson();
+				String msg = gson.toJson("Username non disponibile!!");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
+			}else {
+				String pass = passwordEncoder.encode(utente.getPassword());
+				utente.setPassword(pass);
+				Ruolo ruolo = ruoloService.findFirstById(2);
+				utente.setRuolo(ruolo);
+				utenteService.addUtente(utente);
+				log.info("Utente salvato con successo!!!");
+				Gson gson = new Gson();
+				String msg = gson.toJson("Registrazione avvenuta con successo!!!");
+				return ResponseEntity.ok().body(msg);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE INSERIRE L'UTENTE");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 }

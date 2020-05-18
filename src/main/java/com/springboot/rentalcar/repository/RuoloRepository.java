@@ -8,4 +8,5 @@ import com.springboot.rentalcar.entity.Ruolo;
 @Repository
 public interface RuoloRepository extends JpaRepository<Ruolo, Integer> {
 
+	public Ruolo findFirstById(int id);
 }

@@ -1,4 +1,4 @@
-package com.springboot.rentalcar;
+/*package com.springboot.rentalcar;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -15,7 +15,7 @@ public class FiltersCorsConfig implements WebMvcConfigurer {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry
 					.addMapping("/**")
-					.allowedOrigins("*")
+					.allowedOrigins("http://localhost:4200")
 					.allowedMethods("PUT", "DELETE", "GET", "POST", "OPTIONS", "HEAD", "PATCH")
 					.allowedHeaders("*")
 					.exposedHeaders("header1", "header2", "Authorization")
@@ -24,4 +24,4 @@ public class FiltersCorsConfig implements WebMvcConfigurer {
 			}
 		};
 	}
-}
+}*/

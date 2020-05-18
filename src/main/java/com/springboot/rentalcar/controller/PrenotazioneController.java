@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.springboot.rentalcar.entity.Auto;
 import com.springboot.rentalcar.entity.Prenotazione;
 import com.springboot.rentalcar.entity.Utente;
@@ -38,6 +39,9 @@ public class PrenotazioneController {
 
 	@Autowired 
 	AutoService autoService;
+	
+	@Autowired
+	Gson gson;
 
 	private static final Logger log= LoggerFactory.getLogger(PrenotazioneController.class);
 
@@ -48,7 +52,6 @@ public class PrenotazioneController {
 			String jwt = token.substring(7);
 			String username = jwtTokenUtil.getUsernameFromToken(jwt);
 
-			//String username = auth.getName();
 			Utente utente = utenteService.findFirstByUsername(username);
 			String ruolo = utente.getRuolo().getRuolo();
 			if (ruolo != null && ruolo.equalsIgnoreCase("ROLE_USER")) {
@@ -84,14 +87,20 @@ public class PrenotazioneController {
 			Prenotazione prenotazione = prenotazioneService.getPrenotazione(id);
 			if (prenotazione != null) {
 				prenotazioneService.deleteById(id);
-				return ResponseEntity.ok().body("PRENOTAZIONE ELIMINATA");
+				Gson gson = new Gson();
+				String msg = gson.toJson("PRENOTAZIONE ELIMINATA");
+				return ResponseEntity.ok().body(msg);
 			}else {
 				log.error("PRENOTAZIONE NULLO");
-				return ResponseEntity.badRequest().body("PRENOTAZIONE NON PRESENTE");
+				Gson gson = new Gson();
+				String msg = gson.toJson("PRENOTAZIONE NON PRESENTE");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE ELIMINARE LA PRENOTAZIONE");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE ELIMINARE QUESTA PRENOTAZIUONE");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -110,20 +119,28 @@ public class PrenotazioneController {
 			List<Prenotazione> pA = prenotazioneService.findFirstByAuto(auto);
 			if (pU.size()>=1) {
 				log.error("L'UTENTE "+ username.toUpperCase() + " HA GIA UNA PRENOTAZIONE ATTIVA");
-				return ResponseEntity.badRequest().body("L'UTENTE "+ username.toUpperCase() + " HA GIA UNA PRENOTAZIONE ATTIVA");
+				Gson gson = new Gson();
+				String msg = gson.toJson("L'UTENTE "+ username.toUpperCase() + " HA GIA UNA PRENOTAZIONE ATTIVA");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}else if (pA.size()>=1) {
 				log.error("AUTO NON DISPONIBILE");
-				return ResponseEntity.badRequest().body("AUTO NON DISPONIBILE");
+				Gson gson = new Gson();
+				String msg = gson.toJson("AUTO NON DISPONIBILE");
+				return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 			}else {
 				Prenotazione p = new Prenotazione();
 				p.setAuto(auto);
 				p.setUtente(utente);
 				prenotazioneService.addPrenotazione(p);
-				return ResponseEntity.ok().body("PRENOTAZIONE SALVATA CON SUCCESSO");
+				Gson gson = new Gson();
+				String msg = gson.toJson("PRENOTAZIONE SALVATA CON SUCCESSO");
+				return ResponseEntity.ok().body(msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE AGGIUNGERE UNA PRENOTAZIONE");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE AGGIUNGERE UNA PRENOTAZIONE");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -133,10 +150,14 @@ public class PrenotazioneController {
 		try {
 
 			prenotazioneService.accettaPrenotazione(prenotazione);
-			return ResponseEntity.ok().body("PRENOTAZIONE ACCETTATA");
+			Gson gson = new Gson();
+			String msg = gson.toJson("PRENOTAZIONE ACCETTATA");
+			return ResponseEntity.ok().body(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE ACCETTARE QUESTA PRENOTAZIUONE");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE ACCETTARE QUESTA PRENOTAZIUONE");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -145,10 +166,14 @@ public class PrenotazioneController {
 	public ResponseEntity rifiutaPrenotazione(@RequestBody Prenotazione prenotazione) {
 		try {
 			prenotazioneService.rifiutaPrenotazione(prenotazione);
-			return ResponseEntity.ok().body("PRENOTAZIONE RIFIUTATA");
+			Gson gson = new Gson();
+			String msg = gson.toJson("PRENOTAZIONE RIFIUTATA");
+			return ResponseEntity.ok().body(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body("IMPOSSIBILE RIFIUTARE QUESTA PRENOTAZIUONE");
+			Gson gson = new Gson();
+			String msg = gson.toJson("IMPOSSIBILE RIFIUTARE QUESTA PRENOTAZIUONE");
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 	}
 }
